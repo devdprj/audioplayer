@@ -18,14 +18,14 @@
 #define _BOARD_H_
 
 /*
- * Setup for STMicroelectronics NUCLEO-F401RE board.
+ * Setup for STMicroelectronics NUCLEO-F411RE board.
  */
 
 /*
  * Board identifier.
  */
 #define BOARD_ST_NUCLEO_F401RE
-#define BOARD_NAME                  "STMicroelectronics NUCLEO-F401RE"
+#define BOARD_NAME                  "STMicroelectronics DISCO-F411RE"
 
 
 /*
