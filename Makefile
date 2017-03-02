@@ -113,6 +113,7 @@ CSRC = $(STARTUPSRC) \
        $(PLATFORMSRC) \
        $(BOARDSRC) \
        $(FATFSSRC) \
+       $(CHIBIOS)/os/hal/lib/streams/chprintf.c \
        codec_CS43L22.c	\
        testme.c	\
        mmcfs_sdc.c \
@@ -147,7 +148,8 @@ ASMSRC = $(STARTUPASM) $(PORTASM) $(OSALASM)
 
 INCDIR = $(STARTUPINC) $(KERNINC) $(PORTINC) $(OSALINC) \
          $(HALINC) $(PLATFORMINC) $(BOARDINC) $(FATFSINC) \
-         $(CHIBIOS)/os/various
+         $(CHIBIOS)/os/various	\
+         $(CHIBIOS)/os/hal/lib/streams	\
 
 #
 # Project, sources and paths

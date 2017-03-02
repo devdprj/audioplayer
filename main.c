@@ -16,6 +16,7 @@
 
 #include "ch.h"
 #include "hal.h"
+#include "chprintf.h"
 #include "codec.h"
 #include "testme.h"
 #include "mmcfs_sdc.h"
@@ -40,19 +41,6 @@ static THD_FUNCTION(Thread1, arg) {
  * Application entry point.
  */
 int main(void) {
-  uint8_t arra[10];
-  arra[0] = 0x11;
-  arra[1] = 0x22;
-  arra[2] = 0x33;
-  arra[3] = 0x44;
-  arra[4] = 0x55;
-  arra[5] = 0x66;
-  arra[6] = 0x77;
-  arra[7] = 0x88;
-  arra[8] = 0x99;
-  arra[9] = 0xBB;
-
-
   /*
    * System initializations.
    * - HAL initialization, this also initializes the configured device drivers
@@ -66,13 +54,14 @@ int main(void) {
   /*
    * Activates the serial driver 2 using the driver default configuration.
    */
-  codec_hw_init();
-  sdStart(&SD2, NULL);
-  initMmcfsSdc();
+   sdStart(&SD2, NULL);
+   chThdSleepMilliseconds(100);
+//  initMmcfsSdc();
   /*
    * Creates the blinker thread.
    */
   chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
+ codec_hw_init();
 //  test_43l22_beep(BEEP_MULTIPLE);
 //  codec_sendBeep();
 
@@ -81,18 +70,8 @@ int main(void) {
    * sleeping in a loop and check the button state.
    */
   codec_i2s_init(100,10);
+  chprintf((BaseSequentialStream*)&SD2,"Initilized..\r\n");
   while (true) {
-    arra[0] = 0x11;
-    arra[1] = 0x22;
-    arra[2] = 0x33;
-    arra[3] = 0x44;
-    arra[4] = 0x55;
-    arra[5] = 0x66;
-    arra[6] = 0x77;
-    arra[7] = 0x88;
-    arra[8] = 0x99;
-    arra[9] = 0xBB;
-    codec_audio_send(&arra[0],10);
     chThdSleepMilliseconds(500);
   }
 }

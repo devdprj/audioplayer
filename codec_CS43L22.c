@@ -11,6 +11,7 @@
 // PB6 : SCL
 #include "ch.h"
 #include "hal.h"
+#include "chprintf.h"
 #include "codec.h"
 
 //#include "chprintf.h"
@@ -23,7 +24,7 @@ uint16_t * playerThread;
 static const I2CConfig i2cfg = {
     OPMODE_I2C,
     100000,
-    FAST_DUTY_CYCLE_16_9,
+    STD_DUTY_CYCLE,
 };
 
 #define I2S3_TX_DMA_CHANNEL                                                 \
@@ -34,8 +35,9 @@ static uint8_t txbuf[2]={0}, rxbuf[2]={0};
 
 void codec_hw_init(void)
 {
-  palSetPadMode(GPIOB,6,4);
-  palSetPadMode(GPIOB,9,4);
+  int i;
+//  palSetPadMode(GPIOB,6,4);
+//  palSetPadMode(GPIOB,9,4);
 
 	// Start the i2c driver
 	i2cStart(&CODEC_I2C, &i2cfg);
@@ -49,30 +51,49 @@ void codec_hw_init(void)
 
 	codec_muteCtl(0);
 
-	// Auto Detect Clock, MCLK/2
+	// Auto Detect Clock, MCLK/2i2cGetErrors
 	codec_writeReg(0x05, 0x81);
+//	chprintf(SERIAL,"Address: 0x05, Sent:0x81,Rec:%d\r\n",codec_readReg(0x05));
 
 	// Slave Mode, I2S Data Format
 	codec_writeReg(0x06, 0x04);
+//    chprintf(SERIAL,"Address: 0x06, Sent:0x04,Rec:%d\r\n",codec_readReg(0x06));
 
 	codec_pwrCtl(1);
+//    chprintf(SERIAL,"Address: 0x05, Sent:0x81,Rec:%d",codec_readReg(0x05));
 
 	codec_volCtl(200);
+//    chprintf(SERIAL,"Address: 0x05, Sent:0x81,Rec:%d",codec_readReg(0x05));
 
 	// Adjust PCM Volume
 	codec_writeReg(0x1A, 0x0A);
+//    chprintf(SERIAL,"Address: 0x1A, Sent:0x0A,Rec:%d\r\n",codec_readReg(0x1A));
+//        chprintf(SERIAL,"I2C get error %d\r\n",i2cGetErrors(&CODEC_I2C));
+
 	codec_writeReg(0x1B, 0x0A);
+//    chprintf(SERIAL,"Address: 0x1B, Sent:0x0A,Rec:%d\r\n",codec_readReg(0x1B));
 
 	// Disable the analog soft ramp
 	codec_writeReg(0x0A, 0x00);
+//    chprintf(SERIAL,"Address: 0x0A, Sent:0x00,Rec:%d\r\n",codec_readReg(0x0A));
 
 	// Disable the digital soft ramp
 	codec_writeReg(0x0E, 0x04);
+//    chprintf(SERIAL,"Address: 0x0E, Sent:0x04,Rec:%d\r\n",codec_readReg(0x04));
 
 	// Disable the limiter attack level
 	codec_writeReg(0x27, 0x00);
+//    chprintf(SERIAL,"Address: 0x27, Sent:0x00,Rec:%d\r\n",codec_readReg(0x27));
 
 	codec_writeReg(0x1C, 0x80);
+//    chprintf(SERIAL,"Address: 0x1C, Sent:0x80,Rec:%d\r\n",codec_readReg(0x1C));
+//    chprintf(SERIAL,"I2C get error %d\r\n",CODEC_I2C.i2c->SR1);
+//    i = 99;
+//    chprintf(SERIAL,"Test -  %d\r\n",i);
+
+//    codec_writeReg(0x1C, 0x80);
+        chprintf(SERIAL,"Address: 0x01,Rec:%d \r\n",codec_readReg(0x01));
+
 }
 
 void codec_hw_reset(void)
@@ -80,6 +101,7 @@ void codec_hw_reset(void)
 	palClearPad(GPIOD, 4);
 	chThdSleepMilliseconds(100);
 	palSetPad(GPIOD, 4);
+    chprintf(SERIAL,"Hardware Reset Done!!!\r\n");
 }
 
 static void dma_i2s_interrupt(void* dat, uint32_t flags)

@@ -16,7 +16,7 @@
 
 #ifndef _MCUCONF_H_
 #define _MCUCONF_H_
-    /**/
+
 /*
  * STM32F4xx drivers configuration.
  * The following settings override the default settings present in

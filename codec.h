@@ -16,6 +16,7 @@
 #define CODEC_I2S_ENABLE		rccEnableSPI3(FALSE)
 #define CODEC_I2S_DISABLE		rccDisableSPI3(FALSE)
 #define CODEC_I2S				SPI3
+#define SERIAL                 (BaseSequentialStream*)&SD2
 
 enum CODEC_AUDIOSRC {
 	CODEC_AUDIOSRC_DIGITAL,
@@ -24,7 +25,7 @@ enum CODEC_AUDIOSRC {
 };
 
 
-#define CS43L22_ADDR	(0x94>>1)
+#define CS43L22_ADDR    (0x94 >> 1)
 
 extern void codec_hw_init(void);
 
