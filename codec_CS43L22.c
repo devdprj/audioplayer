@@ -24,7 +24,7 @@ uint16_t * playerThread;
 static const I2CConfig i2cfg = {
     OPMODE_I2C,
     100000,
-    STD_DUTY_CYCLE,
+    FAST_DUTY_CYCLE_16_9,
 };
 
 #define I2S3_TX_DMA_CHANNEL                                                 \
@@ -36,6 +36,7 @@ static uint8_t txbuf[2]={0}, rxbuf[2]={0};
 void codec_hw_init(void)
 {
   int i;
+  uint8_t temp_data;
 //  palSetPadMode(GPIOB,6,4);
 //  palSetPadMode(GPIOB,9,4);
 
@@ -47,7 +48,19 @@ void codec_hw_init(void)
 
 	// Write init sequence
 	// Keep codec powered down initially
+
+    codec_writeReg(0x00, 0x99);
+    codec_writeReg(0x47, 0x80);
+    temp_data = codec_readReg(0x32);
+    codec_writeReg(0x32,temp_data | 0x80);
+    temp_data = codec_readReg(0x32);
+    codec_writeReg(0x32,temp_data & 0x80);
+    codec_writeReg(0x00, 0x00);
+    chprintf(SERIAL,"Address: 0x32,Rec:%d \r\n",temp_data);
+
+
 	codec_pwrCtl(0);
+
 
 	codec_muteCtl(0);
 
@@ -56,7 +69,7 @@ void codec_hw_init(void)
 //	chprintf(SERIAL,"Address: 0x05, Sent:0x81,Rec:%d\r\n",codec_readReg(0x05));
 
 	// Slave Mode, I2S Data Format
-	codec_writeReg(0x06, 0x04);
+	codec_writeReg(0x06, 0x07);
 //    chprintf(SERIAL,"Address: 0x06, Sent:0x04,Rec:%d\r\n",codec_readReg(0x06));
 
 	codec_pwrCtl(1);
@@ -99,7 +112,7 @@ void codec_hw_init(void)
 void codec_hw_reset(void)
 {
 	palClearPad(GPIOD, 4);
-	chThdSleepMilliseconds(100);
+	chThdSleepMilliseconds(200);
 	palSetPad(GPIOD, 4);
     chprintf(SERIAL,"Hardware Reset Done!!!\r\n");
 }
@@ -175,13 +188,17 @@ void codec_writeReg(uint8_t addr, uint8_t data)
 {
 	txbuf[0]=addr;
 	txbuf[1]=data;
+    i2cAcquireBus(&I2CD1);
 	i2cMasterTransmitTimeout(&I2CD1, CS43L22_ADDR, txbuf, 2, NULL, 0, MS2ST(4));
+    i2cReleaseBus(&I2CD1);
 }
 
 uint8_t codec_readReg(uint8_t addr)
 {
 	txbuf[0]=addr;
+	i2cAcquireBus(&I2CD1);
 	i2cMasterTransmitTimeout(&I2CD1, CS43L22_ADDR, txbuf, 1, rxbuf, 2, MS2ST(4));
+    i2cReleaseBus(&I2CD1);
 	return rxbuf[0];
 }
 

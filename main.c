@@ -40,7 +40,8 @@ static THD_FUNCTION(Thread1, arg) {
 /*
  * Application entry point.
  */
-int main(void) {
+int main(void)
+{
   /*
    * System initializations.
    * - HAL initialization, this also initializes the configured device drivers
@@ -51,24 +52,15 @@ int main(void) {
   halInit();
   chSysInit();
 
-  /*
-   * Activates the serial driver 2 using the driver default configuration.
-   */
-   sdStart(&SD2, NULL);
-   chThdSleepMilliseconds(100);
-//  initMmcfsSdc();
-  /*
-   * Creates the blinker thread.
-   */
-  chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
- codec_hw_init();
-//  test_43l22_beep(BEEP_MULTIPLE);
-//  codec_sendBeep();
+  sdStart(&SD2, NULL);
+  chThdSleepMilliseconds(100);
+  //  initMmcfsSdc();
 
-  /*
-   * Normal main() thread activity, in this demo it does nothing except
-   * sleeping in a loop and check the button state.
-   */
+  chThdCreateStatic(waThread1, sizeof(waThread1), NORMALPRIO, Thread1, NULL);
+  codec_hw_init();
+  //  test_43l22_beep(BEEP_MULTIPLE);
+  //  codec_sendBeep();
+
   codec_i2s_init(100,10);
   chprintf((BaseSequentialStream*)&SD2,"Initilized..\r\n");
   while (true) {
